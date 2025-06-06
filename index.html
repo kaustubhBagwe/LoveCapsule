@@ -64,6 +64,8 @@
   .list-view .col-12 {
     width: 100% !important;
   }
+
+  .gridmob{width:50% !important;}
 }
   </style>
 </head>
@@ -193,7 +195,7 @@
         const product = document.createElement("div");
         product.className = "col-md-4 mb-4";
         product.innerHTML = `
-        <div class="col-sm-6 col-md-4 mb-4">
+        <div class="col-sm-6 col-md-4 mb-4 gridmob">
   <div class="card product-card h-100">
     <img src="${products[i]}" class="card-img-top product-image" alt="Product ${i + 1}">
     <div class="card-body text-center">
