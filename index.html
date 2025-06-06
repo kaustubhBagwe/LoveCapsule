@@ -1,134 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Awesome Product</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trendy One-Page eCommerce</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-    }
-
-    body {
-      background: #f5f5f5;
-      color: #333;
-      line-height: 1.6;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    .product-image {
-      text-align: center;
-    }
-
-    .product-image img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 10px;
-    }
-
-    h1 {
-      margin-top: 20px;
-      font-size: 2rem;
-      text-align: center;
-    }
-
-    .description {
-      text-align: center;
-      margin: 20px 0;
-    }
-
-    .features {
-      margin: 30px 0;
-    }
-
-    .features ul {
-      list-style: disc;
-      padding-left: 20px;
-    }
-
-    .price-box {
-      text-align: center;
-      margin: 30px 0;
-    }
-
-    .price {
-      font-size: 2rem;
-      color: #27ae60;
-      font-weight: bold;
-    }
-
-    .buy-button {
-      display: inline-block;
-      margin-top: 15px;
-      background: #27ae60;
-      color: white;
-      padding: 12px 24px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 6px;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .buy-button:hover {
-      background: #219150;
-    }
-
-    .contact {
-      margin-top: 40px;
-      text-align: center;
-    }
-
-    .contact a {
-      color: #2980b9;
-      text-decoration: none;
-    }
-
-    .contact a:hover {
-      text-decoration: underline;
-    }
+    body { font-family: 'Segoe UI', sans-serif; }
+    .sticky-top { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+    .product-card img { height: 200px; object-fit: cover; }
+    .info-icon { font-size: 2rem; margin-bottom: 10px; color: #0d6efd; }
+    .testimonial { font-style: italic; border-left: 3px solid #0d6efd; padding-left: 15px; margin-bottom: 1rem; }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <div class="product-image">
-      <img src="https://via.placeholder.com/600x400?text=Product+Image" alt="Product">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">ShopBrand</a>
+      <form class="d-flex me-auto ms-3">
+        <input class="form-control me-2" type="search" placeholder="Search">
+      </form>
+      <div>
+        <a href="#contact" class="text-white me-3">Contact</a>
+        <a href="#about" class="text-white">About</a>
+      </div>
     </div>
-    <h1>Super Comfy Headphones</h1>
-    <p class="description">Experience premium sound quality with unbeatable comfort and sleek design.</p>
+  </nav>
 
-    <div class="features">
-      <h2>Features</h2>
-      <ul>
-        <li>Noise cancellation technology</li>
-        <li>Wireless with 30-hour battery life</li>
-        <li>Bluetooth 5.2 connectivity</li>
-        <li>Built-in microphone for calls</li>
-      </ul>
+  <!-- Products -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row" id="product-list">
+        <!-- JS will populate here -->
+      </div>
+      <div class="text-center mt-4">
+        <button class="btn btn-primary" id="loadMore">Load More</button>
+      </div>
     </div>
+  </section>
 
-    <div class="price-box">
-      <p class="price">$129.99</p>
-      <a href="#" class="buy-button">Add to Cart</a>
+  <!-- Info Section -->
+  <section class="bg-light py-5">
+    <div class="container text-center">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="info-icon"><i class="fas fa-truck"></i></div>
+          <h5>Free Shipping</h5>
+          <p>On all orders above $50</p>
+        </div>
+        <div class="col-md-4">
+          <div class="info-icon"><i class="fas fa-undo"></i></div>
+          <h5>30 Days Return</h5>
+          <p>No questions asked</p>
+        </div>
+        <div class="col-md-4">
+          <div class="info-icon"><i class="fas fa-clock"></i></div>
+          <h5>Working Hours</h5>
+          <p>Mon - Sat: 9am - 6pm</p>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div class="contact">
-      <p>Need help? <a href="mailto:support@example.com">Contact support</a></p>
+  <!-- About/Policies -->
+  <section class="container py-5" id="about">
+    <h3>About Us</h3>
+    <p>We offer the best quality products delivered to your doorstep. Our mission is to make shopping easy and enjoyable.</p>
+    <h3>Shipping Policy</h3>
+    <p>We process orders within 2 business days. Delivery is tracked and insured.</p>
+    <h3>Return Policy</h3>
+    <p>Returns accepted within 30 days of delivery. Products must be unused and in original packaging.</p>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="bg-light py-5">
+    <div class="container text-center">
+      <h3>What Customers Say</h3>
+      <div class="testimonial">"Amazing service and fast delivery!" – Alice M.</div>
+      <div class="testimonial">"The quality of the products is excellent." – John D.</div>
     </div>
-  </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-4">
+    <div class="container d-flex flex-wrap justify-content-between">
+      <div>
+        <h5>ShopBrand</h5>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-white text-decoration-none">Home</a></li>
+          <li><a href="#about" class="text-white text-decoration-none">About</a></li>
+          <li><a href="#contact" class="text-white text-decoration-none">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Policies</h5>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-white text-decoration-none">Shipping Policy</a></li>
+          <li><a href="#" class="text-white text-decoration-none">Return Policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Support</h5>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-white text-decoration-none">FAQs</a></li>
+          <li><a href="#" class="text-white text-decoration-none">Help Center</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    const products = [
+      "https://source.unsplash.com/random/300x200?product1",
+      "https://source.unsplash.com/random/300x200?product2",
+      "https://source.unsplash.com/random/300x200?product3",
+      "https://source.unsplash.com/random/300x200?product4",
+      "https://source.unsplash.com/random/300x200?product5",
+      "https://source.unsplash.com/random/300x200?product6",
+      "https://source.unsplash.com/random/300x200?product7",
+      "https://source.unsplash.com/random/300x200?product8",
+      "https://source.unsplash.com/random/300x200?product9",
+      "https://source.unsplash.com/random/300x200?product10",
+      "https://source.unsplash.com/random/300x200?product11",
+      "https://source.unsplash.com/random/300x200?product12",
+      "https://source.unsplash.com/random/300x200?product13",
+      "https://source.unsplash.com/random/300x200?product14",
+    ];
+
+    let visibleCount = 0;
+    const perPage = 6;
+    const productList = document.getElementById("product-list");
+
+    function renderProducts() {
+      for (let i = visibleCount; i < visibleCount + perPage && i < products.length; i++) {
+        const product = document.createElement("div");
+        product.className = "col-md-4 mb-4";
+        product.innerHTML = `
+          <div class="card product-card">
+            <img src="${products[i]}" class="card-img-top" alt="Product ${i + 1}">
+            <div class="card-body text-center">
+              <h5 class="card-title">Product ${i + 1}</h5>
+              <p class="card-text">$${(10 + i * 2).toFixed(2)}</p>
+              <button class="btn btn-success">Add to Cart</button>
+            </div>
+          </div>
+        `;
+        productList.appendChild(product);
+      }
+      visibleCount += perPage;
+      if (visibleCount >= products.length) document.getElementById("loadMore").style.display = "none";
+    }
+
+    document.getElementById("loadMore").addEventListener("click", renderProducts);
+    window.onload = renderProducts;
+  </script>
 </body>
 </html>
