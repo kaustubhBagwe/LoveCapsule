@@ -1,221 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trendy One-Page eCommerce</title>
+  <title>Responsive Product Grid with Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap 5 CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
   <style>
-    body { font-family: 'Segoe UI', sans-serif; }
-    .sticky-top { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-    .product-card img { height: 200px; object-fit: cover; }
-    .info-icon { font-size: 2rem; margin-bottom: 10px; color: #0d6efd; }
-    .testimonial { font-style: italic; border-left: 3px solid #0d6efd; padding-left: 15px; margin-bottom: 1rem; }
-    /* Ensure product image is fully visible */
-.product-image {
-  width: 100%;
-  height: 220px;
-  object-fit: contain;
-  padding: 10px;
-}
-
-/* Side-by-side buttons */
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-/* Button colors */
-.btn-violet {
-  background-color: #6f42c1;
-  color: white;
-  border: none;
-}
-
-.btn-violet:hover {
-  background-color: #5a33a6;
-}
-
-.wishlist-btn {
-  border-radius: 50%;
-  width: 38px;
-  height: 38px;
-  padding: 6px;
-  font-size: 1rem;
-  background-color: #f0f0f0;
-  color: #dc3545;
-  border: none;
-}
-
-.wishlist-btn:hover {
-  background-color: #e6e6e6;
-}
-
-/* Grid and List view responsive control */
-@media (max-width: 576px) {
-  .col-sm-6 {
-    flex: 0 0 auto;
-    width: 50%;
-  }
-  .list-view .col-12 {
-    width: 100% !important;
-  }
-
-  .gridmob{width:50% !important;}
-}
+    body {
+      overflow-x: hidden;
+    }
+    .cart-panel {
+      position: fixed;
+      top: 0;
+      right: -350px;
+      width: 350px;
+      height: 100%;
+      background: #f8f9fa;
+      border-left: 1px solid #ddd;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+      padding: 20px;
+      transition: right 0.4s ease;
+      z-index: 1050;
+      overflow-y: auto;
+    }
+    .cart-panel.show {
+      right: 0;
+    }
+    .cart-item {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+    .card-img-top {
+      object-fit: cover;
+      height: 200px;
+    }
   </style>
 </head>
-
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-    <div class="container">
-      <a class="navbar-brand" href="#">ShopBrand</a>
-      <form class="d-flex me-auto ms-3">
-        <input class="form-control me-2" type="search" placeholder="Search">
-      </form>
-      <div>
-        <a href="#contact" class="text-white me-3">Contact</a>
-        <a href="#about" class="text-white">About</a>
-      </div>
-    </div>
-  </nav>
 
-  <!-- Products -->
-  <section class="py-5">
-    <div class="container">
-      <div class="row" id="product-list">
-        <!-- JS will populate here -->
-      </div>
-      <div class="text-center mt-4">
-        <button class="btn btn-primary" id="loadMore">Load More</button>
-      </div>
-    </div>
-  </section>
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Products</h2>
+    <button id="cart-toggle" class="btn btn-primary">🛒 Cart (<span id="cart-count">0</span>)</button>
+  </div>
 
-  <!-- Info Section -->
-  <section class="bg-light py-5">
-    <div class="container text-center">
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="info-icon"><i class="fas fa-truck"></i></div>
-          <h5>Free Shipping</h5>
-          <p>On all orders above $50</p>
-        </div>
-        <div class="col-md-4">
-          <div class="info-icon"><i class="fas fa-undo"></i></div>
-          <h5>30 Days Return</h5>
-          <p>No questions asked</p>
-        </div>
-        <div class="col-md-4">
-          <div class="info-icon"><i class="fas fa-clock"></i></div>
-          <h5>Working Hours</h5>
-          <p>Mon - Sat: 9am - 6pm</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="row" id="product-container">
+    <!-- Products rendered here -->
+  </div>
 
-  <!-- About/Policies -->
-  <section class="container py-5" id="about">
-    <h3>About Us</h3>
-    <p>We offer the best quality products delivered to your doorstep. Our mission is to make shopping easy and enjoyable.</p>
-    <h3>Shipping Policy</h3>
-    <p>We process orders within 2 business days. Delivery is tracked and insured.</p>
-    <h3>Return Policy</h3>
-    <p>Returns accepted within 30 days of delivery. Products must be unused and in original packaging.</p>
-  </section>
-
-  <!-- Testimonials -->
-  <section class="bg-light py-5">
-    <div class="container text-center">
-      <h3>What Customers Say</h3>
-      <div class="testimonial">"Amazing service and fast delivery!" – Alice M.</div>
-      <div class="testimonial">"The quality of the products is excellent." – John D.</div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-dark text-white py-4">
-    <div class="container d-flex flex-wrap justify-content-between">
-      <div>
-        <h5>ShopBrand</h5>
-        <ul class="list-unstyled">
-          <li><a href="#" class="text-white text-decoration-none">Home</a></li>
-          <li><a href="#about" class="text-white text-decoration-none">About</a></li>
-          <li><a href="#contact" class="text-white text-decoration-none">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>Policies</h5>
-        <ul class="list-unstyled">
-          <li><a href="#" class="text-white text-decoration-none">Shipping Policy</a></li>
-          <li><a href="#" class="text-white text-decoration-none">Return Policy</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>Support</h5>
-        <ul class="list-unstyled">
-          <li><a href="#" class="text-white text-decoration-none">FAQs</a></li>
-          <li><a href="#" class="text-white text-decoration-none">Help Center</a></li>
-        </ul>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Scripts -->
-  <script>
-    const products = [
-      "https://rukminim2.flixcart.com/image/850/1000/xif0q/key-chain/k/x/r/sitting-spider-man-avengers-3d-keychain-with-long-ribbon-with-original-imagkcpgh5utzghg.jpeg?q=20&crop=false",
-      "https://source.unsplash.com/random/300x200?product2",
-      "https://rukminim2.flixcart.com/image/850/1000/xif0q/key-chain/k/x/r/sitting-spider-man-avengers-3d-keychain-with-long-ribbon-with-original-imagkcpgh5utzghg.jpeg?q=20&crop=false",
-      "https://source.unsplash.com/random/300x200?product4",
-      "https://source.unsplash.com/random/300x200?product5",
-      "https://source.unsplash.com/random/300x200?product6",
-      "https://source.unsplash.com/random/300x200?product7",
-      "https://source.unsplash.com/random/300x200?product8",
-      "https://source.unsplash.com/random/300x200?product9",
-      "https://source.unsplash.com/random/300x200?product10",
-      "https://source.unsplash.com/random/300x200?product11",
-      "https://source.unsplash.com/random/300x200?product12",
-      "https://source.unsplash.com/random/300x200?product13",
-      "https://source.unsplash.com/random/300x200?product14",
-    ];
-
-    let visibleCount = 0;
-    const perPage = 6;
-    const productList = document.getElementById("product-list");
-
-    function renderProducts() {
-      for (let i = visibleCount; i < visibleCount + perPage && i < products.length; i++) {
-        const product = document.createElement("div");
-        product.className = "col-md-4 mb-4";
-        product.innerHTML = `
-        <div class="col-sm-6 col-md-4 mb-4 gridmob">
-  <div class="card product-card h-100">
-    <img src="${products[i]}" class="card-img-top product-image" alt="Product ${i + 1}">
-    <div class="card-body text-center">
-      <h5 class="card-title">Product ${i + 1}</h5>
-      <div class="action-buttons">
-        <button class="btn wishlist-btn" title="Add to Wishlist"><i class="fas fa-heart"></i></button>
-        <button class="btn btn-violet"><i class="fas fa-cart-plus me-1"></i> Add</button>
-      </div>
-    </div>
+  <div class="text-center mt-3">
+    <button id="show-more" class="btn btn-secondary">Show More</button>
   </div>
 </div>
-        `;
-        productList.appendChild(product);
-      }
-      visibleCount += perPage;
-      if (visibleCount >= products.length) document.getElementById("loadMore").style.display = "none";
-    }
 
-    document.getElementById("loadMore").addEventListener("click", renderProducts);
-    window.onload = renderProducts;
-  </script>
+<!-- Cart Panel -->
+<div class="cart-panel" id="cart-panel">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Shopping Cart</h4>
+    <button id="close-cart" class="btn-close"></button>
+  </div>
+  <div id="cart-items"></div>
+</div>
+<!-- jQuery & Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const products = Array.from({ length: 14 }, (_, i) => ({
+    id: i + 1,
+    name: `Product ${i + 1}`,
+    price: (Math.random() * 100 + 10).toFixed(2),
+    image: `https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQxQ8-aIPrYgLH-S2EBo90xES5QSGUPxTqjpGUKWSpgNtFx4hCl9R_9OOL-_x9zyU46l3NU4n5qqEmO23nljQnLyaekQzENK6NXpnVQYKI7k8tkA3YOCOgf`
+  }));
+
+  let cart = [];
+
+  function isInCart(id) {
+    return cart.some(item => item.id === id);
+  }
+
+  function renderProducts(start = 0, count = 6) {
+    const items = products.slice(start, start + count);
+    items.forEach(product => {
+      $('#product-container').append(`
+        <div class="col-6 col-md-4 mb-4 product-item">
+          <div class="card h-100">
+            <img src="${product.image}" 
+                 class="card-img-top" 
+                 alt="${product.name}" 
+                 onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
+            <div class="card-body text-center">
+              <h5 class="card-title">${product.name}</h5>
+              <p class="card-text">$${product.price}</p>
+              <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart" data-id="${product.id}">
+                ${isInCart(product.id) ? 'Remove from Cart' : 'Add to Cart'}
+              </button>
+            </div>
+          </div>
+        </div>
+      `);
+    });
+  } 
+
+  function updateCart() {
+  $('#cart-items').empty();
+  cart.forEach(item => {
+    $('#cart-items').append(`
+      <div class="cart-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>${item.name}</strong><br>
+          $${item.price}
+        </div>
+        <button class="btn btn-sm btn-danger remove-from-cart" data-id="${item.id}">Remove</button>
+      </div>
+    `);
+  });
+  $('#cart-count').text(cart.length);
+}
+
+// Close cart panel
+$('#close-cart').on('click', function () {
+  $('#cart-panel').removeClass('show');
+});
+
+// Remove from cart from inside the cart
+$(document).on('click', '.remove-from-cart', function () {
+  const id = $(this).data('id');
+  const index = cart.findIndex(item => item.id === id);
+  if (index >= 0) {
+    cart.splice(index, 1);
+    updateCart();
+    reRenderButtons(); // update main grid buttons
+  }
+});
+
+  function reRenderButtons() {
+    $('.toggle-cart').each(function () {
+      const id = $(this).data('id');
+      const inCart = isInCart(id);
+      $(this)
+        .toggleClass('btn-success', !inCart)
+        .toggleClass('btn-danger', inCart)
+        .text(inCart ? 'Remove from Cart' : 'Add to Cart');
+    });
+  }
+
+  $(document).ready(function () {
+    let shown = 0;
+    const showStep = 6;
+
+    renderProducts(shown, showStep);
+    shown += showStep;
+
+    $('#show-more').on('click', function () {
+      renderProducts(shown, showStep);
+      shown += showStep;
+      if (shown >= products.length) {
+        $(this).hide();
+      }
+    });
+
+    $('#cart-toggle').on('click', function () {
+      $('#cart-panel').toggleClass('show');
+    });
+
+    $(document).on('click', '.toggle-cart', function () {
+      const id = $(this).data('id');
+      const product = products.find(p => p.id === id);
+      const index = cart.findIndex(item => item.id === id);
+      if (index >= 0) {
+        cart.splice(index, 1);
+      } else {
+        cart.push(product);
+      }
+      updateCart();
+      reRenderButtons();
+    });
+  });
+</script>
+
 </body>
 </html>
