@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Key UniVerse</title>
@@ -9,13 +10,44 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
- 
-  #autocomplete-list li {
-    cursor: pointer;
-  }
+    @keyframes vibrate {
+      0% {
+        transform: translateX(0);
+      }
+
+      20% {
+        transform: translateX(-2px);
+      }
+
+      40% {
+        transform: translateX(2px);
+      }
+
+      60% {
+        transform: translateX(-2px);
+      }
+
+      80% {
+        transform: translateX(2px);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
+    .vibrate {
+      animation: vibrate 0.3s ease-in-out;
+    }
+
+    #autocomplete-list li {
+      cursor: pointer;
+    }
+
     body {
       overflow-x: hidden;
     }
+
     .cart-panel {
       position: fixed;
       top: 0;
@@ -24,112 +56,236 @@
       height: 100%;
       background: #f8f9fa;
       border-left: 1px solid #ddd;
-      box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
       padding: 20px;
       transition: right 0.4s ease;
       z-index: 1050;
       overflow-y: auto;
     }
+
     .cart-panel.show {
       right: 0;
     }
+
     .cart-item {
       border-bottom: 1px solid #ccc;
       padding: 10px 0;
     }
+
     .card-img-top {
       object-fit: cover;
       height: 200px;
     }
+
+    #wishlist-container .list-group-item {
+      border: 1px solid #e2e2e2;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    #mobile-autocomplete-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: white;
+    }
+
+    .dropdown-toggle::after {
+      display: none;
+    }
+
+    @media (max-width: 991.98px) {
+      #product-search {
+        display: none !important;
+        margin-top: 10px;
+      }
+
+      #product-search.show {
+        display: block !important;
+      }
+    }
   </style>
 </head>
+
 <body>
-<!-- Sticky Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top px-3">
-  <a class="navbar-brand" href="#">MyStore</a>
-  <div class="ms-auto d-flex align-items-center" style="gap: 10px;">
-    <div class="position-relative">
-      <input type="text" id="product-search" class="form-control" placeholder="Search products..." autocomplete="off">
-      <ul id="autocomplete-list" class="list-group position-absolute w-100" style="z-index: 1051;"></ul>
+  <!-- Sticky Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top px-3">
+    <!-- Hamburger menu for mobile -->
+    <button class="btn btn-outline-light d-lg-none me-2" id="hamburger-btn">☰</button>
+
+    <a class="navbar-brand" href="#">Happy Hub Store</a>
+    <div class="ms-auto d-flex align-items-center" style="gap: 10px;">
+      <!-- <div class="position-relative">
+        <input type="text" id="product-search" class="form-control" placeholder="Search products..." autocomplete="off">
+        <ul id="autocomplete-list" class="list-group position-absolute w-100" style="z-index: 1051;"></ul>
+      </div> -->
+      <!-- Search (Responsive) -->
+      <div class="search-container d-none d-lg-block position-relative me-3">
+        <input type="text" id="product-search" class="form-control" placeholder="Search products..." autocomplete="off">
+        <ul id="autocomplete-list" class="list-group position-absolute w-100" style="z-index: 1051;"></ul>
+      </div>
+
+      <!-- Mobile Search Icon -->
+      <button class="btn btn-outline-light d-lg-none" id="search-toggle">
+        🔍
+      </button>
+      <button id="cart-toggle" class="btn btn-outline-light">
+        🛒 Cart (<span id="cart-count">0</span>)
+      </button>
     </div>
-    <button id="cart-toggle" class="btn btn-outline-light">
-      🛒 Cart (<span id="cart-count">0</span>)
-    </button>
-  </div>
-</nav>
-
-<!-- Fullscreen Black Overlay -->
-<div id="black-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:1050;"></div>
-
-<div class="container my-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Feature Product</h2>
-  <!--  <button id="cart-toggle" class="btn btn-primary">🛒 Cart (<span id="cart-count">0</span>)</button> -->
+  </nav>
+  <!-- Mobile Search Bar (Initially hidden) -->
+  <div class="container-fluid bg-dark d-lg-none py-2" id="mobile-search-bar" style="display: none;">
+    <input type="text" id="mobile-product-search" class="form-control" placeholder="Search products..."
+      autocomplete="off">
+    <ul id="mobile-autocomplete-list" class="list-group position-absolute w-100" style="z-index: 1051;"></ul>
   </div>
 
-  <div class="row" id="product-container">
-    <!-- Products rendered here -->
+  <!-- Sidebar Menu for Mobile -->
+  <div id="sidebar-menu" class="bg-light position-fixed top-0 start-0 vh-100 p-3"
+    style="width: 250px; z-index: 1052; transform: translateX(-100%); transition: transform 0.3s;">
+    <button class="btn btn-sm btn-danger mb-3" id="close-sidebar">✖</button>
+    <ul class="list-unstyled">
+      <li><a href="#about" class="nav-link">📄 About Us</a></li>
+      <li><a href="#contact" class="nav-link">📞 Contact Us</a></li>
+      <li><a href="#return" class="nav-link">🔁 Return Policy</a></li>
+      <li><a href="#shipping" class="nav-link">🚚 Shipping Policy</a></li>
+    </ul>
+  </div>
+  <!-- Category Menu for Desktop -->
+  <div class="bg-light py-2 px-3 d-none d-lg-flex justify-content-center" style="gap: 30px;">
+    <a href="#" class="text-dark fw-bold">StarBucks</a>
+    <a href="#" class="text-dark fw-bold">Marvel</a>
+    <a href="#" class="text-dark fw-bold">Tom & Jerry</a>
+  </div>
+  <!-- Fullscreen Black Overlay -->
+  <div id="black-overlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:1050;"></div>
+
+  <div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>Feature Product</h2>
+      <!--  <button id="cart-toggle" class="btn btn-primary">🛒 Cart (<span id="cart-count">0</span>)</button> -->
+      <!-- Filter Dropdown -->
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          🔽 Filter
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
+          <li><a class="dropdown-item filter-option" data-filter="low-high">💲 Low to High Price</a></li>
+          <li><a class="dropdown-item filter-option" data-filter="high-low">💰 High to Low Price</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row" id="product-container">
+      <!-- Products rendered here -->
+    </div>
+
+    <div class="text-center mt-3">
+      <button id="show-more" class="btn btn-secondary">Show More</button>
+    </div>
   </div>
 
-  <div class="text-center mt-3">
-    <button id="show-more" class="btn btn-secondary">Show More</button>
+  <!-- Cart Panel -->
+  <div class="cart-panel" id="cart-panel">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4>Shopping Cart</h4>
+      <button id="close-cart" class="btn-close"></button>
+    </div>
+    <div id="cart-items"></div>
+
+    <div class="container mt-4" id="wishlist-section">
+      <h4>My WhishList</h4>
+      <div class="list-group" id="wishlist-container"></div>
+    </div>
   </div>
-</div>
+  <!-- jQuery & Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Cart Panel -->
-<div class="cart-panel" id="cart-panel">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4>Shopping Cart</h4>
-    <button id="close-cart" class="btn-close"></button>
-  </div>
-  <div id="cart-items"></div>
-</div>
-<!-- jQuery & Bootstrap JS --> 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let products = []; // Will be loaded from JSON
+    let cart = loadCartFromStorage();
+    let shown = 0;
+    const showStep = 6;
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    let currentFilter = "";
 
-<script>
-  const products = Array.from({ length: 14 }, (_, i) => ({
-    id: i + 1,
-    name: `Product ${i + 1}`,
-    price: (Math.random() * 100 + 10).toFixed(2),
-    image: `https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQxQ8-aIPrYgLH-S2EBo90xES5QSGUPxTqjpGUKWSpgNtFx4hCl9R_9OOL-_x9zyU46l3NU4n5qqEmO23nljQnLyaekQzENK6NXpnVQYKI7k8tkA3YOCOgf`
-  }));
 
-  let cart = [];
+    function loadProducts() {
+      return fetch('https://raw.githubusercontent.com/kaustubhBagwe/myaffliateprogram/Production/products.json')
+        .then(response => response.json())
+        .then(data => {
+          products = data;
+          renderProducts(shown, showStep);
+          shown += showStep;
+          $('#show-more').on('click', showMoreProducts);
+          updateCart();
+          initAutocomplete();
+        })
+        .catch(error => console.error('Failed to load products:', error));
+    }
 
-const productNames = products.map(p => p.name); // Assuming you already have products array
+    function isInWishlist(id) {
+      return wishlist.includes(id);
+    }
 
-// Autocomplete dropdown
-$('#product-search').on('input', function () {
-  const value = $(this).val().toLowerCase();
-  const matches = productNames.filter(name => name.toLowerCase().includes(value)).slice(0, 5);
+    function updateWishlist() {
+      $('#wishlist-container').empty();
+      $('#wishlist-count').text(wishlist.length);
+      const items = products.filter(p => wishlist.includes(p.id));
 
-  const list = $('#autocomplete-list');
-  list.empty();
+      if (items.length === 0) {
+        $('#wishlist-container').append('<p class="text-muted">Your wishlist is empty.</p>');
+        return;
+      }
 
-  if (value && matches.length) {
-    matches.forEach(name => {
-      list.append(`<li class="list-group-item list-group-item-action cursor-pointer">${name}</li>`);
-    });
-  }
-});
+      items.forEach(product => {
+        $('#wishlist-container').append(`
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="${product.image}" alt="${product.name}" width="60" height="60" class="me-3 rounded" onerror="this.onerror=null;this.src='https://via.placeholder.com/60?text=No+Img';">
+          <div>
+            <h6 class="mb-0">${product.name}</h6>
+            <small class="text-muted">$${product.price}</small>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-danger remove-from-wishlist" data-id="${product.id}">
+          Remove
+        </button>
+      </div>
+    `);
+      });
+    }
 
-// On click suggestion → show full-screen black page
-$(document).on('click', '#autocomplete-list li', function () {
-  $('#black-overlay').fadeIn();
-  $('#autocomplete-list').empty();
-  $('#product-search').val('');
-});
+    // Autocomplete functionality
+    function initAutocomplete() {
+      const productNames = products.map(p => p.name);
+      $('#product-search').on('input', function () {
+        const value = $(this).val().toLowerCase();
+        const matches = productNames.filter(name => name.toLowerCase().includes(value)).slice(0, 5);
+        const list = $('#autocomplete-list');
+        list.empty();
+        if (value && matches.length) {
+          matches.forEach(name => {
+            list.append(`<li class="list-group-item list-group-item-action cursor-pointer">${name}</li>`);
+          });
+        }
+      });
 
-  function isInCart(id) {
-    return cart.some(item => item.id === id);
-  }
+      $(document).on('click', '#autocomplete-list li', function () {
+        $('#black-overlay').fadeIn();
+        $('#autocomplete-list').empty();
+        $('#product-search').val('');
+      });
+    }
 
-  function renderProducts(start = 0, count = 6) {
-    const items = products.slice(start, start + count);
-    items.forEach(product => {
-      $('#product-container').append(`
+    function renderProducts(start = 0, count = 6) {
+      const items = products.slice(start, start + count);
+      items.forEach(product => {
+        $('#product-container').append(`
         <div class="col-6 col-md-4 mb-4 product-item">
           <div class="card h-100">
             <img src="${product.image}" 
@@ -142,89 +298,199 @@ $(document).on('click', '#autocomplete-list li', function () {
               <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart" data-id="${product.id}">
                 ${isInCart(product.id) ? 'Remove from Cart' : 'Add to Cart'}
               </button>
+               <button class="btn btn-${isInWishlist(product.id) ? 'secondary' : 'warning'} toggle-wishlist" data-id="${product.id}">
+                ❤️
+              </button>
             </div>
           </div>
         </div>
       `);
+      });
+    }
+    $(document).on('click', '.toggle-wishlist', function () {
+      const id = Number($(this).data('id'));
+      if (isInWishlist(id)) {
+        wishlist = wishlist.filter(pid => pid !== id);
+      } else {
+        wishlist.push(id);
+      }
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      $('#product-container').empty();
+      renderProducts(0, shown);
+      updateWishlist();
     });
-  } 
 
-  function updateCart() {
-  $('#cart-items').empty();
-  cart.forEach(item => {
-    $('#cart-items').append(`
-      <div class="cart-item d-flex justify-content-between align-items-center">
-        <div>
-          <strong>${item.name}</strong><br>
-          $${item.price}
-        </div>
-        <button class="btn btn-sm btn-danger remove-from-cart" data-id="${item.id}">Remove</button>
-      </div>
-    `);
-  });
-  $('#cart-count').text(cart.length);
-}
-
-// Close cart panel
-$('#close-cart').on('click', function () {
-  $('#cart-panel').removeClass('show');
-});
-
-// Remove from cart from inside the cart
-$(document).on('click', '.remove-from-cart', function () {
-  const id = $(this).data('id');
-  const index = cart.findIndex(item => item.id === id);
-  if (index >= 0) {
-    cart.splice(index, 1);
-    updateCart();
-    reRenderButtons(); // update main grid buttons
-  }
-});
-
-  function reRenderButtons() {
-    $('.toggle-cart').each(function () {
-      const id = $(this).data('id');
-      const inCart = isInCart(id);
-      $(this)
-        .toggleClass('btn-success', !inCart)
-        .toggleClass('btn-danger', inCart)
-        .text(inCart ? 'Remove from Cart' : 'Add to Cart');
+    $(document).on('click', '.remove-from-wishlist', function () {
+      const id = Number($(this).data('id'));
+      wishlist = wishlist.filter(pid => pid !== id);
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      updateWishlist();
     });
-  }
 
-  $(document).ready(function () {
-    let shown = 0;
-    const showStep = 6;
 
-    renderProducts(shown, showStep);
-    shown += showStep;
+    $('.filter-option').on('click', function () {
+      currentFilter = $(this).data('filter');
 
-    $('#show-more').on('click', function () {
+      // Sort products
+      if (currentFilter === 'low-high') {
+        products.sort((a, b) => a.price - b.price);
+      } else if (currentFilter === 'high-low') {
+        products.sort((a, b) => b.price - a.price);
+      } else if (currentFilter === 'most-purchased') {
+        products.sort((a, b) => (b.purchasedCount || 0) - (a.purchasedCount || 0));
+      }
+
+      // Re-render products
+      shown = 0;
+      $('#product-container').empty();
+      renderProducts(shown, showStep);
+      shown += showStep;
+    });
+    // Optionally bind to Wishlist Menu Button
+    $('#view-wishlist').on('click', function () {
+      $('html, body').animate({
+        scrollTop: $('#wishlist-section').offset().top
+      }, 500);
+    });
+    function showMoreProducts() {
       renderProducts(shown, showStep);
       shown += showStep;
       if (shown >= products.length) {
-        $(this).hide();
+        $('#show-more').hide();
       }
-    });
+    }
 
-    $('#cart-toggle').on('click', function () {
-      $('#cart-panel').toggleClass('show');
-    });
+    function updateCart() {
+      $('#cart-items').empty();
 
-    $(document).on('click', '.toggle-cart', function () {
-      const id = $(this).data('id');
-      const product = products.find(p => p.id === id);
-      const index = cart.findIndex(item => item.id === id);
-      if (index >= 0) {
-        cart.splice(index, 1);
-      } else {
-        cart.push(product);
+      cart.forEach(item => {
+        $('#cart-items').append(`
+        <div class="cart-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>${item.name}</strong><br>
+            $${item.price}
+          </div>
+          <button class="btn btn-sm btn-danger remove-from-cart" data-id="${item.id}">Remove</button>
+        </div>
+      `);
+      });
+      $('#cart-count').text(cart.length);
+      if (cart.length === 0) {
+        $('#cart-items').append('<p class="text-muted">Your Cart is empty.</p>');
+        return;
       }
-      updateCart();
-      reRenderButtons();
+      saveCartToStorage();
+
+      const cartBtn = $('#cart-toggle');
+      cartBtn.addClass('vibrate');
+      setTimeout(() => cartBtn.removeClass('vibrate'), 300);
+    }
+
+    function isInCart(id) {
+      return cart.some(item => item.id === id);
+    }
+
+    function loadCartFromStorage() {
+      const storedCart = localStorage.getItem('cart');
+      return storedCart ? JSON.parse(storedCart) : [];
+    }
+
+    function saveCartToStorage() {
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    function reRenderButtons() {
+      $('.toggle-cart').each(function () {
+        const id = $(this).data('id');
+        const inCart = isInCart(id);
+        $(this)
+          .toggleClass('btn-success', !inCart)
+          .toggleClass('btn-danger', inCart)
+          .text(inCart ? 'Remove from Cart' : 'Add to Cart');
+      });
+    }
+
+    // On Document Ready
+    $(document).ready(function () {
+      loadProducts();
+
+      // Toggle mobile search bar
+      $('#search-toggle').on('click', function () {
+        $('#mobile-search-bar').slideToggle();
+        $('#mobile-product-search').focus();
+      });
+
+      // Sidebar toggle
+      $('#hamburger-btn').on('click', function () {
+        $('#sidebar-menu').css('transform', 'translateX(0)');
+      });
+
+      $('#close-sidebar').on('click', function () {
+        $('#sidebar-menu').css('transform', 'translateX(-100%)');
+      });
+
+      // Search toggle for mobile
+      $('#search-toggle').on('click', function () {
+        if ($('#product-search').hasClass('d-none')) {
+          $('#product-search').removeClass('d-none').focus();
+        } else {
+          $('#product-search').addClass('d-none');
+        }
+      });
+
+
+      // Copy search logic to mobile
+      $('#mobile-product-search').on('input', function () {
+        const query = $(this).val().toLowerCase();
+        const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+
+        const $list = $('#mobile-autocomplete-list');
+        $list.empty();
+
+        filtered.slice(0, 5).forEach(product => {
+          $list.append(`<li class="list-group-item">${product.name}</li>`);
+        });
+      });
+      $('#show-more').on('click', showMoreProducts);
+
+      $('#cart-toggle').on('click', function () {
+        $('#cart-panel').toggleClass('show');
+      });
+
+      $('#close-cart').on('click', function () {
+        $('#cart-panel').removeClass('show');
+      });
+
+      // Add/Remove from cart from grid
+      $(document).on('click', '.toggle-cart', function () {
+        const id = $(this).data('id');
+        const product = products.find(p => p.id === id);
+        const index = cart.findIndex(item => item.id === id);
+        if (index >= 0) {
+          cart.splice(index, 1);
+        } else {
+          cart.push(product);
+        }
+        updateCart();
+        reRenderButtons();
+      });
+
+      // Remove from cart from inside cart
+      $(document).on('click', '.remove-from-cart', function () {
+        const id = $(this).data('id');
+        const index = cart.findIndex(item => item.id === id);
+        if (index >= 0) {
+          cart.splice(index, 1);
+          updateCart();
+          reRenderButtons();
+        }
+      });
+
+      updateCart(); // Render cart initially
     });
-  });
-</script>
+  </script>
+
 
 </body>
+
 </html>
