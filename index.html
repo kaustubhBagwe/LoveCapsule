@@ -327,7 +327,7 @@
             <p class="card-text">$${product.category}</p>
             <p class="card-text car-bold">$${product.price}</p>
             <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart" data-id="${product.id}">
-              ${isInCart(product.id) ? 'Remove from Cart' : 'Add to Cart'}
+              ${isInCart(product.id) ? 'Remove' : 'Add to Cart'}
             </button>
           </div>
         </div>
@@ -383,7 +383,7 @@
                 <p class="card-text">$${product.category}</p>
               <p class="card-text car-bold">$${product.price}</p>
               <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart" data-id="${product.id}">
-                ${isInCart(product.id) ? 'Remove from Cart' : 'Add to Cart'}
+                ${isInCart(product.id) ? 'Remove' : 'Add to Cart'}
               </button>
             </div>
           </div>
@@ -440,7 +440,7 @@
                    <p class="card-text">$${product.category}</p>
               <p class="card-text car-bold">$${product.price}</p>
               <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart" data-id="${product.id}">
-                ${isInCart(product.id) ? 'Remove from Cart' : 'Add to Cart'}
+                ${isInCart(product.id) ? 'Remove' : 'Add to Cart'}
               </button>
                <button class="btn btn-${isInWishlist(product.id) ? 'secondary' : 'warning'} toggle-wishlist" data-id="${product.id}">
                 <i class="bi bi-heart"></i>
