@@ -550,7 +550,7 @@
         $(this)
           .toggleClass('btn-success', !inCart)
           .toggleClass('btn-danger', inCart)
-          .text(inCart ? 'Remove from Cart' : 'Add to Cart');
+          .text(inCart ? 'Remove' : 'Add to Cart');
       });
     }
 
@@ -605,7 +605,7 @@
         $('#cart-panel').removeClass('show');
       });
 
-      // Add/Remove from cart from grid
+      // Add/Remove from grid
       $(document).on('click', '.toggle-cart', function () {
         const id = $(this).data('id');
         const product = products.find(p => p.id === id);
@@ -619,7 +619,7 @@
         reRenderButtons();
       });
 
-      // Remove from cart from inside cart
+      // Remove from inside cart
       $(document).on('click', '.remove-from-cart', function () {
         const id = $(this).data('id');
         const index = cart.findIndex(item => item.id === id);
