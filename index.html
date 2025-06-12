@@ -52,6 +52,26 @@
       overflow-x: hidden;
     }
 
+    .card-title {
+      font-size: medium !important;
+    }
+
+    .card-text {
+      font-size: small !important;
+      color: #9E9E9E;
+    }
+
+    .car-bold {
+      font-weight: 600 !important;
+      color: #666666 !important;
+    }
+
+    .toggle-cart {
+      font-size: small;
+      font-weight: 300;
+    }
+
+
     .cart-panel {
       position: fixed;
       top: 0;
@@ -150,6 +170,8 @@
   <div id="sidebar-menu" class="bg-light position-fixed top-0 start-0 vh-100 p-3"
     style="width: 250px; z-index: 1052; transform: translateX(-100%); transition: transform 0.3s;">
     <button class="btn btn-sm btn-danger mb-3" id="close-sidebar">✖</button>
+    <h5>Categories</h5>
+    <ul id="mobile-categories" class="list-unstyled"></ul>
     <ul class="list-unstyled">
       <li><a href="#about" class="nav-link">📄 About Us</a></li>
       <li><a href="#contact" class="nav-link">📞 Contact Us</a></li>
@@ -158,10 +180,9 @@
     </ul>
   </div>
   <!-- Category Menu for Desktop -->
-  <div class="bg-light py-2 px-3 d-none d-lg-flex justify-content-center" style="gap: 30px;">
-    <a href="#" class="text-dark fw-bold">StarBucks</a>
-    <a href="#" class="text-dark fw-bold">Marvel</a>
-    <a href="#" class="text-dark fw-bold">Tom & Jerry</a>
+  <!-- Category Menu for Desktop -->
+  <div class="bg-light py-2 px-3 d-none d-lg-flex justify-content-center" id="desktop-categories" style="gap: 30px;">
+    <!-- Categories will be injected here -->
   </div>
   <!-- Fullscreen Black Overlay -->
   <div id="black-overlay"
@@ -172,6 +193,8 @@
       <h2>Feature Product</h2>
       <!--  <button id="cart-toggle" class="btn btn-primary">🛒 Cart (<span id="cart-count">0</span>)</button> -->
       <!-- Filter Dropdown -->
+      <!-- Selected Filter Tags -->
+      <div id="selected-filters" class="mb-3 d-flex flex-wrap" style="gap: 10px;"></div>
       <div class="dropdown">
         <button class="btn btn-outline-secondary dropdown-toggle noborder" type="button" id="filterDropdown"
           data-bs-toggle="dropdown" aria-expanded="false">
@@ -219,7 +242,8 @@
     const showStep = 6;
     let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
     let currentFilter = "";
-
+    const categories = ['StarBucks', 'Marvel', 'Tom & Jerry'];
+    let selectedCategory = null;
 
     function loadProducts() {
       return fetch('https://raw.githubusercontent.com/kaustubhBagwe/myaffliateprogram/Production/products.json')
@@ -256,6 +280,7 @@
           <img src="${product.image}" alt="${product.name}" width="60" height="60" class="me-3 rounded" onerror="this.onerror=null;this.src='https://via.placeholder.com/60?text=No+Img';">
           <div>
             <h6 class="mb-0">${product.name}</h6>
+              <p class="card-text">$${product.category}</p>
             <small class="text-muted">$${product.price}</small>
           </div>
         </div>
@@ -266,6 +291,117 @@
     `);
       });
     }
+
+    function createFilterTag(category) {
+      $('#selected-filters').html(`
+    <span class="badge bg-primary d-flex align-items-center px-3 py-2">
+      ${category}
+      <button type="button" class="btn-close btn-close-white ms-2" aria-label="Close" onclick="clearCategoryFilter()"></button>
+    </span>
+  `);
+    }
+
+    function clearCategoryFilter() {
+      selectedCategory = null;
+      $('#selected-filters').empty();
+      renderProducts(0); // Show all products again
+    }
+
+    function filterByCategory(category) {
+      selectedCategory = category;
+      createFilterTag(category);
+      const filtered = products.filter(p => p.category === category);
+      $('#product-container').empty();
+      renderFilteredProducts(filtered);
+    }
+
+    function renderFilteredProducts(filteredItems) {
+      filteredItems.forEach(product => {
+        $('#product-container').append(`
+      <div class="col-6 col-md-4 mb-4 product-item">
+        <div class="card h-100">
+          <img src="${product.image}" class="card-img-top" alt="${product.name}"
+            onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
+          <div class="card-body text-center">
+            <h5 class="card-title">${product.name}</h5>
+            <p class="card-text">$${product.category}</p>
+            <p class="card-text car-bold">$${product.price}</p>
+            <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart" data-id="${product.id}">
+              ${isInCart(product.id) ? 'Remove from Cart' : 'Add to Cart'}
+            </button>
+          </div>
+        </div>
+      </div>
+    `);
+      });
+    }
+
+
+    // Render categories
+    // function renderCategories() {
+    //   categories.forEach(cat => {
+    //     $('#desktop-categories').append(`<a href="#" class="text-dark fw-bold category-link" data-category="${cat}">${cat}</a>`);
+    //     $('#mobile-categories').append(`<li><a href="#" class="nav-link category-link" data-category="${cat}">${cat}</a></li>`);
+    //   });
+    // }
+
+    function renderCategories() {
+      categories.forEach(cat => {
+        $('#desktop-categories').append(`<a href="#" class="text-dark fw-bold category-link" data-category="${cat}">${cat}</a>`);
+        $('#mobile-categories').append(`<li><a href="#" class="nav-link category-link" data-category="${cat}">${cat}</a></li>`);
+      });
+      attachCategoryClickHandlers(); // 🔁 Ensure click works after render
+    }
+    // Attach event handler after categories are rendered
+    function attachCategoryClickHandlers() {
+      $('.category-link').off('click').on('click', function (e) {
+        e.preventDefault();
+        const category = $(this).data('category');
+        filterByCategory(category);
+      });
+    }
+    // Filter products by category
+    function filterByCategory(category) {
+      const filtered = products.filter(p => p.category === category);
+      $('#product-container').empty();
+      shown = 0;
+      renderProductsFromList(filtered);
+    }
+
+    // Helper for filtered rendering
+    function renderProductsFromList(list) {
+      list.slice(0, showStep).forEach(product => {
+        $('#product-container').append(`
+        <div class="col-6 col-md-4 mb-4 product-item">
+          <div class="card h-100">
+            <img src="${product.image}" 
+                class="card-img-top" 
+                alt="${product.name}" 
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
+            <div class="card-body text-center">
+              <h5 class="card-title">${product.name}</h5>
+                <p class="card-text">$${product.category}</p>
+              <p class="card-text car-bold">$${product.price}</p>
+              <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart" data-id="${product.id}">
+                ${isInCart(product.id) ? 'Remove from Cart' : 'Add to Cart'}
+              </button>
+            </div>
+          </div>
+        </div>
+      `);
+      });
+    }
+
+    // Add event listeners
+    $(document).on('click', '.category-link', function (e) {
+      e.preventDefault();
+      const cat = $(this).data('category');
+      filterByCategory(cat);
+      $('#sidebar-menu').css('transform', 'translateX(-100%)'); // Close sidebar
+    });
+
+    // Call render
+    renderCategories();
 
     // Autocomplete functionality
     function initAutocomplete() {
@@ -301,7 +437,8 @@
                  onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
             <div class="card-body text-center">
               <h5 class="card-title">${product.name}</h5>
-              <p class="card-text">$${product.price}</p>
+                   <p class="card-text">$${product.category}</p>
+              <p class="card-text car-bold">$${product.price}</p>
               <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart" data-id="${product.id}">
                 ${isInCart(product.id) ? 'Remove from Cart' : 'Add to Cart'}
               </button>
