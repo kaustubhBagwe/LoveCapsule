@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    .product-image {
+      width: 100%;
+      max-height: 500px;
+      object-fit: contain;
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .price {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #d63384;
+    }
+
+    .navbar .form-control {
+      width: 250px;
+    }
+
+    @media (max-width: 768px) {
+      .navbar .form-control {
+        width: 100%;
+        margin-top: 8px;
+      }
+    }
+
+    .icon-badge {
+      position: relative;
+    }
+
+    .icon-badge[data-count]:after {
+      content: attr(data-count);
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+ <!-- Sticky Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top px-3">
+    <!-- Hamburger menu for mobile -->
+    <button class="btn btn-outline-light d-lg-none me-2 noborder" style="padding: 5px;" id="hamburger-btn">☰</button>
+
+    <a class="navbar-brand" href="file:///D:/MyGithub/myaffliateprogram/index.html">Happy Hub Store</a>
+    <div class="ms-auto d-flex align-items-center" style="gap: 10px;">
+      <!-- <div class="position-relative">
+        <input type="text" id="product-search" class="form-control" placeholder="Search products..." autocomplete="off">
+        <ul id="autocomplete-list" class="list-group position-absolute w-100" style="z-index: 1051;"></ul>
+      </div> -->
+      <!-- Search (Responsive) -->
+      <div class="search-container d-none d-lg-block position-relative me-3">
+        <input type="text" id="product-search" class="form-control" placeholder="Search products..." autocomplete="off">
+        <ul id="autocomplete-list" class="list-group position-absolute w-100" style="z-index: 1051;"></ul>
+      </div>
+
+      <!-- Mobile Search Icon -->
+      <button class="btn btn-outline-light d-lg-none noborder" id="search-toggle">
+        <i class="bi bi-search"></i>
+      </button>
+      <button id="cart-toggle" class="btn btn-outline-light">
+        <i class="bi bi-cart-check"></i> Cart (<span id="cart-count">0</span>)
+
+      </button>
+    </div>
+  </nav>
+  <!-- Mobile Search Bar (Initially hidden) -->
+  <div class="container-fluid bg-dark d-lg-none py-2" id="mobile-search-bar" style="display: none;">
+    <input type="text" id="mobile-product-search" class="form-control" placeholder="Search products..."
+      autocomplete="off">
+    <ul id="mobile-autocomplete-list" class="list-group position-absolute w-100" style="z-index: 1051;"></ul>
+  </div>
+
+  <!-- Sidebar Menu for Mobile -->
+  <div id="sidebar-menu" class="bg-light position-fixed top-0 start-0 vh-100 p-3"
+    style="width: 250px; z-index: 1052; transform: translateX(-100%); transition: transform 0.3s;">
+    <button class="btn btn-sm btn-danger mb-3" id="close-sidebar">✖</button>
+    <h5>Categories</h5>
+    <ul id="mobile-categories" class="list-unstyled"></ul>
+    <ul class="list-unstyled">
+      <li><a href="#about" class="nav-link">📄 About Us</a></li>
+      <li><a href="#contact" class="nav-link">📞 Contact Us</a></li>
+      <li><a href="#return" class="nav-link">🔁 Return Policy</a></li>
+      <li><a href="#shipping" class="nav-link">🚚 Shipping Policy</a></li>
+    </ul>
+  </div>
+  <!-- Category Menu for Desktop -->
+  <!-- Category Menu for Desktop -->
+  <div class="bg-light py-2 px-3 d-none d-lg-flex justify-content-center" id="desktop-categories" style="gap: 30px;">
+    <!-- Categories will be injected here -->
+  </div>
+  <!-- Fullscreen Black Overlay -->
+  <div id="black-overlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:1050;"></div>
+
+  <div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+     <a href="https://kaustubhbagwe.github.io/myaffliateprogram/">Home</a>
+      
+    </div>
+
+  <!-- ✅ Product Detail Section -->
+  <div class="container my-5" id="product-detail-container">
+    <!-- Product data loads here -->
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    function isInWishlist(id) {
+      return wishlist.includes(id);
+    }
+
+    function isInCart(id) {
+      return cart.includes(id);
+    }
+
+    function toggleWishlist(id, btn) {
+      if (isInWishlist(id)) {
+        wishlist = wishlist.filter(pid => pid !== id);
+        $(btn).removeClass('btn-secondary').addClass('btn-warning');
+        $(btn).find('i').removeClass('bi-heart-fill text-danger').addClass('bi-heart');
+      } else {
+        wishlist.push(id);
+        $(btn).removeClass('btn-warning').addClass('btn-secondary');
+        $(btn).find('i').removeClass('bi-heart').addClass('bi-heart-fill text-danger');
+      }
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      updateCounters();
+    }
+
+    function toggleCart(id, btn) {
+      if (isInCart(id)) {
+        cart = cart.filter(pid => pid !== id);
+        $(btn).removeClass('btn-danger').addClass('btn-success').text('Add to Cart');
+      } else {
+        cart.push(id);
+        $(btn).removeClass('btn-success').addClass('btn-danger').text('Remove');
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCounters();
+    }
+
+    function updateCounters() {
+      $('#cart-icon').attr('data-count', cart.length);
+      $('#wishlist-icon').attr('data-count', wishlist.length);
+    }
+
+    function populateCategories(products) {
+      const categories = [...new Set(products.map(p => p.category))];
+      const menu = $('#category-menu');
+      menu.empty();
+      categories.forEach(cat => {
+        menu.append(`<li><a class="dropdown-item" href="#">${cat}</a></li>`);
+      });
+    }
+
+    $(document).ready(function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const productId = Number(urlParams.get('id'));
+
+      if (!productId) {
+        $('#product-detail-container').html('<div class="alert alert-danger">Invalid product ID.</div>');
+        return;
+      }
+
+      $.getJSON('https://raw.githubusercontent.com/kaustubhBagwe/myaffliateprogram/Production/products.json', function (products) {
+        const product = products.find(p => p.id === productId);
+        if (!product) {
+          $('#product-detail-container').html('<div class="alert alert-danger">Product not found.</div>');
+          return;
+        }
+
+        populateCategories(products);
+        updateCounters();
+
+        $('#product-detail-container').html(`
+          <div class="row gy-4 align-items-start">
+            <div class="col-md-6">
+              <img src="${product.image}" alt="${product.name}" class="product-image"
+                   onerror="this.onerror=null;this.src='https://via.placeholder.com/350x350?text=No+Image';">
+            </div>
+            <div class="col-md-6">
+              <h2>${product.name}</h2>
+              <p class="text-muted">Category: ${product.category}</p>
+              <div class="price mb-3">$${product.price}</div>
+              <p>${product.description || 'No description available.'}</p>
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart-btn">
+                  ${isInCart(product.id) ? 'Remove' : 'Add to Cart'}
+                </button>
+                <button class="btn btn-${isInWishlist(product.id) ? 'secondary' : 'warning'} btn-icon wishlist-btn">
+                  <i class="bi ${isInWishlist(product.id) ? 'bi-heart-fill text-danger' : 'bi-heart'}"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `);
+
+        $('.wishlist-btn').on('click', function () {
+          toggleWishlist(product.id, this);
+        });
+
+        $('.toggle-cart-btn').on('click', function () {
+          toggleCart(product.id, this);
+        });
+      });
+
+      // Optional: Search handler (redirect or filter logic can go here)
+      $('#search-box').on('keypress', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          alert('Search for: ' + $(this).val());
+        }
+      });
+    });
+  </script>
+</body>
+</html>
