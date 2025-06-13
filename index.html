@@ -128,6 +128,16 @@
         display: block !important;
       }
     }
+
+    .btn-secondary i {
+      color: red;
+    }
+    .category-link{
+      text-decoration: none;
+      cursor: pointer;
+      color: #212529;
+      
+    }
   </style>
 </head>
 
@@ -137,7 +147,7 @@
     <!-- Hamburger menu for mobile -->
     <button class="btn btn-outline-light d-lg-none me-2 noborder" style="padding: 5px;" id="hamburger-btn">☰</button>
 
-    <a class="navbar-brand" href="#">Happy Hub Store</a>
+    <a class="navbar-brand" href="file:///D:/MyGithub/myaffliateprogram/index.html">Happy Hub Store</a>
     <div class="ms-auto d-flex align-items-center" style="gap: 10px;">
       <!-- <div class="position-relative">
         <input type="text" id="product-search" class="form-control" placeholder="Search products..." autocomplete="off">
@@ -320,10 +330,14 @@
         $('#product-container').append(`
       <div class="col-6 col-md-4 mb-4 product-item">
         <div class="card h-100">
-          <img src="${product.image}" class="card-img-top" alt="${product.name}"
-            onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
-          <div class="card-body text-center">
-            <h5 class="card-title">${product.name}</h5>
+           <a href="product-details.html?id=${product.id}" class="text-decoration-none text-dark">
+            <img src="${product.image}" 
+                 class="card-img-top" 
+                 alt="${product.name}" 
+                 onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
+            <div class="card-body text-center">
+              <h5 class="card-title">${product.name}</h5>
+              </a>
             <p class="card-text">$${product.category}</p>
             <p class="card-text car-bold">$${product.price}</p>
             <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart" data-id="${product.id}">
@@ -358,6 +372,7 @@
         e.preventDefault();
         const category = $(this).data('category');
         filterByCategory(category);
+
       });
     }
     // Filter products by category
@@ -374,16 +389,21 @@
         $('#product-container').append(`
         <div class="col-6 col-md-4 mb-4 product-item">
           <div class="card h-100">
+            <a href="product-details.html?id=${product.id}" class="text-decoration-none text-dark">
             <img src="${product.image}" 
-                class="card-img-top" 
-                alt="${product.name}" 
-                onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
+                 class="card-img-top" 
+                 alt="${product.name}" 
+                 onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
             <div class="card-body text-center">
               <h5 class="card-title">${product.name}</h5>
-                <p class="card-text">$${product.category}</p>
+              </a>
+                   <p class="card-text">$${product.category}</p>
               <p class="card-text car-bold">$${product.price}</p>
               <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart" data-id="${product.id}">
                 ${isInCart(product.id) ? 'Remove' : 'Add to Cart'}
+              </button>
+               <button class="btn btn-${isInWishlist(product.id) ? 'secondary' : 'warning'} toggle-wishlist" data-id="${product.id}">
+                <i class="bi bi-heart"></i>
               </button>
             </div>
           </div>
@@ -391,6 +411,7 @@
       `);
       });
     }
+
 
     // Add event listeners
     $(document).on('click', '.category-link', function (e) {
@@ -431,12 +452,14 @@
         $('#product-container').append(`
         <div class="col-6 col-md-4 mb-4 product-item">
           <div class="card h-100">
+             <a href="product-details.html?id=${product.id}" class="text-decoration-none text-dark">
             <img src="${product.image}" 
                  class="card-img-top" 
                  alt="${product.name}" 
                  onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=No+Image';">
             <div class="card-body text-center">
               <h5 class="card-title">${product.name}</h5>
+              </a>
                    <p class="card-text">$${product.category}</p>
               <p class="card-text car-bold">$${product.price}</p>
               <button class="btn btn-${isInCart(product.id) ? 'danger' : 'success'} toggle-cart" data-id="${product.id}">
@@ -453,15 +476,20 @@
     }
     $(document).on('click', '.toggle-wishlist', function () {
       const id = Number($(this).data('id'));
+
       if (isInWishlist(id)) {
         wishlist = wishlist.filter(pid => pid !== id);
+        $(this).removeClass('btn-secondary').addClass('btn-warning');
       } else {
         wishlist.push(id);
+        $(this).removeClass('btn-warning').addClass('btn-secondary');
       }
+
       localStorage.setItem('wishlist', JSON.stringify(wishlist));
-      $('#product-container').empty();
-      renderProducts(0, shown);
       updateWishlist();
+       // Just update the icon without re-rendering all
+  const icon = $(this).find('i');
+  icon.toggleClass('bi-heart bi-heart-fill text-danger');
     });
 
     $(document).on('click', '.remove-from-wishlist', function () {
